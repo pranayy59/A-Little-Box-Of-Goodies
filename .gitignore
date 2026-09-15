@@ -1,8 +1,17 @@
 node_modules/
 .next/
 .env
+.env.local
+.env*.local
 *.db
 *.db-journal
+*.tsbuildinfo
 .sites-runtime/
 test-results/
 playwright-report/
+public/uploads/*
+!public/uploads/.gitkeep
+.DS_Store
+*.log
+.vercel
+coverage/
