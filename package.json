@@ -2,13 +2,21 @@
   "name": "little-box-of-goodies",
   "version": "1.0.0",
   "private": true,
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.mjs"
+  },
   "scripts": {
     "dev": "next dev --hostname 0.0.0.0",
     "build": "next build",
     "start": "next start --hostname 0.0.0.0",
     "db:setup": "node --env-file=.env scripts/prepare-db.mjs && prisma migrate deploy && node prisma/seed.mjs",
     "postinstall": "prisma generate",
-    "test": "node --test tests/api.test.mjs"
+    "test": "node --test tests/api.test.mjs",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "next": "^16.0.0",

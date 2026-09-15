@@ -14,6 +14,20 @@ npm run dev
 
 Open http://localhost:3000. An example box is available at `/p/a-little-demo`.
 
+## Environment variables
+
+Contents of `.env.example`:
+
+```env
+DATABASE_URL="file:./dev.db"
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
+
+# Optional: export in your shell to test a different running server.
+# TEST_URL="http://localhost:3000"
+```
+
+`DATABASE_URL` selects the SQLite file (relative paths resolve from `prisma/`); `NEXT_PUBLIC_APP_URL` sets the origin for social previews. These are the only app-specific setup variables. The API tests optionally read `TEST_URL` from the shell and otherwise use `http://localhost:3000`; `npm test` does not load that variable from `.env`. `NODE_ENV` is managed by Next.js and should not be added to `.env`.
+
 ## Production
 
 ```sh
@@ -23,6 +37,8 @@ npm start
 ```
 
 Set `NEXT_PUBLIC_APP_URL` to the actual HTTPS origin **before building** so Open Graph URLs point to the public host. Set `DATABASE_URL` to a persistent SQLite file (for example `file:/data/goodies.db`) on a Node.js host with a durable disk. Back up this file. A single-instance deployment is appropriate for this SQLite setup. Ephemeral/serverless disks, including a standard Vercel deployment, will not preserve data. The supplied Sites host runs Cloudflare Workers and cannot directly run this Node.js/Prisma SQLite configuration; no fake static deployment is supplied.
+
+Suitable hosts include [Railway with a persistent volume](https://docs.railway.com/volumes) and [Fly.io with a Fly Volume](https://fly.io/docs/js/the-basics/volumes/), running a single Node.js instance with the SQLite file on the mounted volume.
 
 ## Flows
 
@@ -38,8 +54,16 @@ Set `NEXT_PUBLIC_APP_URL` to the actual HTTPS origin **before building** so Open
 
 Sender tokens are 256-bit random secrets, stored hashed in the database. They travel in URL fragments and request headers, never in the recipient link. Anyone with the private sender link can manage that package; keep it private. Recipient IDs are unguessable bearer links, not account authentication. Anonymous packages omit the actual sender name from recipient HTML and metadata. Reaction permission belongs to the first opener’s browser via an HttpOnly cookie; subsequent viewers can read the package but cannot overwrite that reply. Clearing cookies loses reaction permission. There is no email or push notification integration: the delivery diary updates on the private sender page.
 
-Media is embedded into the SQLite record to work without storage service credentials (1 MB per file; 6 MB aggregate request limit). Spotify links use embeds; other HTTPS music links open externally. Third-party playback depends on provider availability. Audio is uploaded, not recorded inside the app. Doodles support pointer/touch; the personal note provides a text alternative. Reduced-motion preferences are respected. No account signup or production abuse/rate-limiting service is configured.
+Media is embedded into the SQLite record to work without storage service credentials (1 MB per file; 6 MB aggregate request limit), so the database file and its backups grow with usage as photos and audio are attached rather than staying a fixed small size. Spotify links use embeds; other HTTPS music links open externally. Third-party playback depends on provider availability. Audio is uploaded, not recorded inside the app. Doodles support pointer/touch; the personal note provides a text alternative. Reduced-motion preferences are respected. No account signup or production abuse/rate-limiting service is configured.
 
 ## Validation
 
 `npm run build` checks production compilation and TypeScript. With a local server running, `npm test` exercises draft privacy, publishing, anonymous metadata, opened events, private access, reaction ownership, and edit locking. Tests delete only the records they create.
+
+`npm run test:e2e` invokes Playwright. No Playwright config currently exists; a minimal config and Playwright-compatible tests may be needed for this script to work. The existing API suite uses Node's test runner, and `scripts/browser-check.mjs` is a standalone browser check.
+
+**overrides-note:** `prisma@6.19.2 → @prisma/config@6.19.2` pulls in `effect` and `deepmerge-ts`; overrides enforce patched ranges (`^3.20.0` and `^8.0.0`) to address [Effect context contamination](https://github.com/advisories/GHSA-38f7-945m-qr2g) and [DeepmergeTS stack exhaustion](https://github.com/advisories/GHSA-ggr8-5vv4-36mx), respectively.
+
+## License
+
+UNLICENSED — no license is granted for reuse or distribution.
