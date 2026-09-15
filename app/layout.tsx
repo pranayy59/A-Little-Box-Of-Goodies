@@ -1,0 +1,6 @@
+import type {Metadata} from 'next';
+import Link from 'next/link';
+import {Package,Heart,ArrowUpRight} from 'lucide-react';
+import './globals.css';
+export const metadata:Metadata={metadataBase:new URL(process.env.NEXT_PUBLIC_APP_URL||'http://localhost:3000'),title:'A Little Box of Goodies',description:'A digital care package, filled with little things and a whole lot of love.',icons:{icon:'/favicon.svg'},referrer:'no-referrer'};
+export default function RootLayout({children}:{children:React.ReactNode}){return <html lang="en"><body><header className="site-header"><Link className="wordmark" href="/"><span className="brand-icon"><Package size={23}/></span>a little box of goodies<span className="brand-dot">®</span></Link><div className="header-note">little things, lovingly sent <Heart size={14}/></div><Link className="demo-link" href="/p/a-little-demo">Open a sample box <ArrowUpRight size={14}/></Link></header>{children}<footer className="site-footer"><span>created by <a href="https://littleweb.world" target="_blank" rel="noreferrer">@littlewebworld ↗</a></span><span>this package will be delivered with care and love <Heart size={13}/></span><span>MADE OF LITTLE THINGS.</span></footer></body></html>;}

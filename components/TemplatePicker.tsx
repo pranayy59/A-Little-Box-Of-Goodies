@@ -1,0 +1,3 @@
+'use client';
+import {templates,catalog,Box,ItemType} from '@/lib/catalog';
+export function TemplatePicker({box,onChange}:{box:Box;onChange:(b:Box)=>void}){return <section className="templates"><div className="section-eyebrow">A LITTLE HELP GETTING STARTED <span>pick a starter kit</span></div><div className="template-row">{templates.map(t=><button key={t.name} className={`template ${box.template===t.name?'selected':''}`} onClick={()=>{const picks=t.types.filter(type=>!box.items.some(i=>i.type===type)).map(type=>({type:type as ItemType,note:t.note,qty:1,content:catalog.find(c=>c.type===type)!.defaultContent}));onChange({...box,template:t.name,items:[...box.items,...picks]});}}><span>{t.emoji}</span>{t.name}</button>)}</div></section>;}

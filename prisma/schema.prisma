@@ -1,0 +1,22 @@
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "sqlite"
+  url = env("DATABASE_URL")
+}
+model Package {
+  id String @id
+  senderHash String
+  to String
+  from String
+  isAnonymous Boolean @default(false)
+  items String
+  template String?
+  status String @default("draft")
+  createdAt DateTime @default(now())
+  openedAt DateTime?
+  recipientReaction String?
+  recipientNote String?
+  reactionHash String?
+}
