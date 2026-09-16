@@ -42,8 +42,9 @@ underlying error in the deploy logs. It does not seed or reset the database.
 `db:setup` is optional for production and adds the example box.
 
 On Railway, attach the persistent volume at `/data` and set
-`DATABASE_URL=file:/data/goodies.db`. The checked-in `railway.json` selects
-`npm start`. Migrations must run at startup: Railway does not mount volumes
+`DATABASE_URL=file:/data/goodies.db`. Use `npm start` as the service start
+command and leave the pre-deploy command empty. Migrations must run at startup:
+Railway does not mount volumes
 during builds or pre-deploy commands. No `.env` file is required on Railway;
 its environment variables are used directly.
 
