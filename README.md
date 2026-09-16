@@ -36,6 +36,22 @@ npm run build
 npm start
 ```
 
+`npm start` prepares the SQLite file and runs `prisma migrate deploy` before
+starting Next.js. Startup fails if preparation or migration fails, with the
+underlying error in the deploy logs. It does not seed or reset the database.
+`db:setup` is optional for production and adds the example box.
+
+On Railway, attach the persistent volume at `/data` and set
+`DATABASE_URL=file:/data/goodies.db`. The checked-in `railway.json` selects
+`npm start`. Migrations must run at startup: Railway does not mount volumes
+during builds or pre-deploy commands. No `.env` file is required on Railway;
+its environment variables are used directly.
+
+Package creation logs JSON, schema validation, and database errors server-side,
+including the failure stage. Invalid input returns 400, oversized input returns
+413, and unexpected failures return 500 with a friendly message. Inspect deploy
+logs for `[POST /api/packages]` to see the actual error.
+
 Set `NEXT_PUBLIC_APP_URL` to the actual HTTPS origin **before building** so Open Graph URLs point to the public host. Set `DATABASE_URL` to a persistent SQLite file (for example `file:/data/goodies.db`) on a Node.js host with a durable disk. Back up this file. A single-instance deployment is appropriate for this SQLite setup. Ephemeral/serverless disks, including a standard Vercel deployment, will not preserve data. The supplied Sites host runs Cloudflare Workers and cannot directly run this Node.js/Prisma SQLite configuration; no fake static deployment is supplied.
 
 Suitable hosts include [Railway with a persistent volume](https://docs.railway.com/volumes) and [Fly.io with a Fly Volume](https://fly.io/docs/js/the-basics/volumes/), running a single Node.js instance with the SQLite file on the mounted volume.

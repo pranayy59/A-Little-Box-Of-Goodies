@@ -3,6 +3,13 @@ import assert from 'node:assert/strict';
 import {PrismaClient} from '@prisma/client';
 const origin=process.env.TEST_URL||'http://localhost:3000';
 const db=new PrismaClient();
+test('package creation rejects malformed JSON and invalid schemas',async()=>{
+ const post=body=>fetch(`${origin}/api/packages`,{method:'POST',headers:{'Content-Type':'application/json'},body});
+ let r=await post('{');assert.equal(r.status,400);
+ assert.deepEqual(await r.json(),{error:'Could not save your box. Please try again.'});
+ r=await post('{}');assert.equal(r.status,400);
+ assert.deepEqual(await r.json(),{error:'Please check your names and goodies.'});
+});
 test('private draft → anonymous delivery → opening → reaction → edit lock',async()=>{
  const box={to:'API test recipient',from:'PRIVATE_SENDER_MUST_NOT_LEAK',isAnonymous:true,template:'Just Because',items:[{type:'quote',qty:1,note:'Made with care',content:'One small step.'}]};let id;
  try {
